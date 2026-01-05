@@ -56,6 +56,38 @@ class DekaValidator
      */
     public function validateDekaData(array $data): array
     {
+        // اگر payload به شکل SaveParcels باشد، هر parcel را جداگانه بررسی می‌کنیم
+        if (isset($data['Parcels']) && is_array($data['Parcels'])) {
+            $errors = [];
+
+            foreach ($data['Parcels'] as $index => $parcel) {
+                if (!is_array($parcel)) {
+                    $errors[] = "فیلد Parcels[{$index}] نامعتبر است";
+                    continue;
+                }
+
+                $parcelValidation = $this->validateSingleParcel($parcel);
+                foreach ($parcelValidation['errors'] as $err) {
+                    // برای دیباگ بهتر، ایندکس پارسل را به خطا اضافه می‌کنیم
+                    $errors[] = "Parcels[{$index}]: {$err}";
+                }
+            }
+
+            return [
+                'valid' => empty($errors),
+                'errors' => $errors,
+            ];
+        }
+
+        // در غیر این صورت، فرض می‌کنیم یک parcel (flat) دریافت کرده‌ایم
+        return $this->validateSingleParcel($data);
+    }
+
+    /**
+     * اعتبارسنجی یک parcel تکی (flat)
+     */
+    private function validateSingleParcel(array $data): array
+    {
         $errors = [];
 
         // بررسی فیلدهای اجباری با نام واقعی (camelCase)

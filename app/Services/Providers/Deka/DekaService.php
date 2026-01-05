@@ -190,23 +190,28 @@ class DekaService extends BaseProvider implements ProviderInterface
 
         // تبدیل به فرمت دکا
         $mapper = new DekaMapper();
-        $data = $mapper->mapShipmentToDeka($shipment, $this->provider);
+        $parcel = $mapper->mapShipmentToDeka($shipment, $this->provider);
+        // فرمت مورد انتظار SaveParcels
+        $data = [
+            'Parcels' => [$parcel],
+        ];
 
         // لاگ داده‌ها برای دیباگ
+        $sampleParcel = $data['Parcels'][0] ?? [];
         Log::debug('Deka mapped data', [
             'shipment_id' => $shipment->id,
             'data_keys' => array_keys($data),
             'sample_data' => [
-                'serviceID' => $data['serviceID'] ?? null,
-                'serviceType' => $data['serviceType'] ?? null,
-                'contractID' => $data['contractID'] ?? null,
-                'destCityID' => $data['destCityID'] ?? null,
-                'sourceCityID' => $data['sourceCityID'] ?? null,
-                'serialNo' => $data['serialNo'] ?? null,
-                'weight' => $data['weight'] ?? null,
-                'length' => $data['length'] ?? null,
-                'width' => $data['width'] ?? null,
-                'height' => $data['height'] ?? null,
+                'serviceID' => $sampleParcel['serviceID'] ?? null,
+                'serviceType' => $sampleParcel['serviceType'] ?? null,
+                'contractID' => $sampleParcel['contractID'] ?? null,
+                'destCityID' => $sampleParcel['destCityID'] ?? null,
+                'sourceCityID' => $sampleParcel['sourceCityID'] ?? null,
+                'serialNo' => $sampleParcel['serialNo'] ?? null,
+                'weight' => $sampleParcel['weight'] ?? null,
+                'length' => $sampleParcel['length'] ?? null,
+                'width' => $sampleParcel['width'] ?? null,
+                'height' => $sampleParcel['height'] ?? null,
             ],
         ]);
 
