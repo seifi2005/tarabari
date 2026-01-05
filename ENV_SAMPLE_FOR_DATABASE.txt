@@ -1,0 +1,29 @@
+# ========================================
+# تنظیمات دیتابیس - کپی کنید در .env
+# ========================================
+
+# دیتابیس پیش‌فرض
+DB_CONNECTION=core_db
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=
+
+# دیتابیس هسته (احراز هویت و کاربران)
+CORE_DB_HOST=127.0.0.1
+CORE_DB_DATABASE=panel_core
+CORE_DB_USERNAME=root
+CORE_DB_PASSWORD=
+
+# دیتابیس سفارشات (محموله‌ها و آیتم‌ها)
+ORDERS_DB_HOST=127.0.0.1
+ORDERS_DB_DATABASE=panel_orders
+ORDERS_DB_USERNAME=root
+ORDERS_DB_PASSWORD=
+
+# دیتابیس پرداخت (آماده آینده)
+PAYMENT_DB_HOST=127.0.0.1
+PAYMENT_DB_DATABASE=panel_payment
+PAYMENT_DB_USERNAME=root
+PAYMENT_DB_PASSWORD=
+

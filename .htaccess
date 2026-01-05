@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Redirect /panel/ (root) to /panel/public/
+    RewriteCond %{REQUEST_URI} ^/panel/?$
+    RewriteRule ^$ /panel/public/ [R=301,L]
+    
+    # Don't rewrite if already pointing to public directory
+    RewriteCond %{REQUEST_URI} !^/panel/public/
+    
+    # Rewrite all other requests to public directory
+    RewriteRule ^(.*)$ /panel/public/$1 [L]
+</IfModule>

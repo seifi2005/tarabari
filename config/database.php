@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'core_db'),
 
     /*
     |--------------------------------------------------------------------------
@@ -91,6 +91,90 @@ return [
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        // دیتابیس هسته سیستم (احراز هویت و کاربران)
+        'core_db' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('CORE_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('CORE_DB_DATABASE', 'panel_core'),
+            'username' => env('CORE_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('CORE_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        // دیتابیس سفارشات و محموله‌ها
+        'orders_db' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('ORDERS_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('ORDERS_DB_DATABASE', 'panel_orders'),
+            'username' => env('ORDERS_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('ORDERS_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        // دیتابیس پرداخت (آینده)
+        'payment_db' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('PAYMENT_DB_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('PAYMENT_DB_DATABASE', 'panel_payment'),
+            'username' => env('PAYMENT_DB_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('PAYMENT_DB_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        // دیتابیس قدیمی (برای migration داده)
+        'old_db' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('OLD_DB_DATABASE', 'dashboard'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
 
     ],

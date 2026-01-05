@@ -14,7 +14,7 @@ class ReceptorController extends Controller
     {
         $this->middleware(function ($request, $next) {
             if (!auth()->user()->isSuperAdmin() && !auth()->user()->isOperator()) {
-                return response()->json(['message' => 'Unauthorized'], 403);
+                return response()->json(['message' => trans('messages.unauthorized')], 403);
             }
             return $next($request);
         });
@@ -37,6 +37,8 @@ class ReceptorController extends Controller
             'allowed_ip' => 'nullable|ip',
             'username' => 'required|string|unique:receptors',
             'password' => 'required|string|min:8',
+            'orders_base_url' => 'nullable|url|max:500',
+            'orders_auth_token' => 'nullable|string|max:500',
         ]);
 
         $receptor = Receptor::create([
@@ -47,10 +49,12 @@ class ReceptorController extends Controller
             'allowed_ip' => $request->allowed_ip,
             'username' => $request->username,
             'password' => Hash::make($request->password),
+            'orders_base_url' => $request->orders_base_url,
+            'orders_auth_token' => $request->orders_auth_token,
         ]);
 
         return response()->json([
-            'message' => 'Receptor created successfully',
+            'message' => trans('messages.receptor_created'),
             'receptor' => $receptor->load('user'),
         ], 201);
     }
@@ -74,9 +78,20 @@ class ReceptorController extends Controller
             'allowed_ip' => 'nullable|ip',
             'username' => ['sometimes', 'required', 'string', Rule::unique('receptors')->ignore($receptor->id)],
             'password' => 'sometimes|string|min:8',
+            'orders_base_url' => 'nullable|url|max:500',
+            'orders_auth_token' => 'nullable|string|max:500',
         ]);
 
-        $data = $request->only(['first_name', 'last_name', 'company_name', 'mobile', 'allowed_ip', 'username']);
+        $data = $request->only([
+            'first_name', 
+            'last_name', 
+            'company_name', 
+            'mobile', 
+            'allowed_ip', 
+            'username',
+            'orders_base_url',
+            'orders_auth_token',
+        ]);
 
         if ($request->has('password')) {
             $data['password'] = Hash::make($request->password);
@@ -85,7 +100,7 @@ class ReceptorController extends Controller
         $receptor->update($data);
 
         return response()->json([
-            'message' => 'Receptor updated successfully',
+            'message' => trans('messages.receptor_updated'),
             'receptor' => $receptor->load('user'),
         ]);
     }
@@ -96,7 +111,50 @@ class ReceptorController extends Controller
         $receptor->delete();
 
         return response()->json([
-            'message' => 'Receptor deleted successfully',
+            'message' => trans('messages.receptor_deleted'),
+        ]);
+    }
+
+    /**
+     * دریافت لیست provider های مجاز برای receptor
+     */
+    public function getProviders($id)
+    {
+        $receptor = Receptor::with('providers')->findOrFail($id);
+
+        return response()->json([
+            'receptor_id' => $receptor->id,
+            'providers' => $receptor->providers->map(function ($provider) {
+                $provider->makeHidden(['api_password', 'api_key']);
+                return $provider;
+            }),
+        ]);
+    }
+
+    /**
+     * تنظیم provider های مجاز برای receptor
+     */
+    public function attachProviders(Request $request, $id)
+    {
+        $request->validate([
+            'provider_ids' => 'required|array',
+            'provider_ids.*' => 'exists:providers,id',
+        ]);
+
+        $receptor = Receptor::findOrFail($id);
+
+        // Sync providers (حذف قبلی‌ها و اضافه کردن جدیدها)
+        $receptor->providers()->sync($request->provider_ids);
+
+        $receptor->load('providers');
+
+        return response()->json([
+            'message' => 'Providers attached successfully',
+            'receptor_id' => $receptor->id,
+            'providers' => $receptor->providers->map(function ($provider) {
+                $provider->makeHidden(['api_password', 'api_key']);
+                return $provider;
+            }),
         ]);
     }
 }

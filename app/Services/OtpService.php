@@ -15,7 +15,7 @@ class OtpService
     public function __construct()
     {
         $this->apiKey = config('services.kavenegar.api_key');
-        $this->template = config('services.kavenegar.template', 'otp');
+        $this->template = config('services.kavenegar.template', 'tarabar-login');
     }
 
     public function generateOtp(string $mobile): array
@@ -67,14 +67,12 @@ class OtpService
      */
     private function sendSmsViaLookup(string $mobile, string $code): void
     {
-        $response = Http::withHeaders([
-            'Accept' => 'application/json',
-        ])->post("https://api.kavenegar.com/v1/{$this->apiKey}/verify/lookup.json", [
+       
+   		 $response = Http::asForm()->post("https://api.kavenegar.com/v1/{$this->apiKey}/verify/lookup.json", [
             'receptor' => $mobile,
             'token' => $code,
             'template' => $this->template,
         ]);
-
         if ($response->failed()) {
             $errorBody = $response->body();
             Log::error('Kavenegar API request failed', [

@@ -26,7 +26,7 @@ class ReceptorAuthController extends Controller
 
         if (!$receptor || !Hash::check($request->password, $receptor->password)) {
             return response()->json([
-                'message' => 'Invalid credentials',
+                'message' => trans('messages.invalid_credentials'),
             ], 401);
         }
 
@@ -37,7 +37,7 @@ class ReceptorAuthController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'User not found for this receptor',
+                'message' => trans('messages.user_not_found_for_receptor'),
             ], 404);
         }
 
@@ -52,7 +52,7 @@ class ReceptorAuthController extends Controller
         $token = JWTAuth::fromUser($user);
 
         return response()->json([
-            'message' => 'Token generated successfully',
+            'message' => trans('messages.token_generated_successfully'),
             'token' => $token,
             'token_type' => 'Bearer',
             'expires_in' => config('jwt.ttl') * 60, // به ثانیه
@@ -81,7 +81,7 @@ class ReceptorAuthController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Token invalid or expired',
+                'message' => trans('messages.token_invalid_or_expired'),
             ], 401);
         }
     }
@@ -101,7 +101,7 @@ class ReceptorAuthController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Token refresh failed',
+                'message' => trans('messages.token_refresh_failed'),
             ], 401);
         }
     }

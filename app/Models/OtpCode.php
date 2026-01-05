@@ -10,6 +10,8 @@ class OtpCode extends Model
 {
     use HasFactory;
 
+    protected $connection = 'core_db';
+
     protected $fillable = [
         'mobile',
         'code',

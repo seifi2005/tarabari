@@ -33,7 +33,11 @@ return [
 
     'kavenegar' => [
         'api_key' => env('KAVENEGAR_API_KEY'),
-        'template' => env('KAVENEGAR_TEMPLATE', 'otp'),
+        'template' => env('KAVENEGAR_TEMPLATE', 'hamtayar-otp'),
+        'sender' => env('KAVENEGAR_SENDER', null), // شماره خط ارسال کننده (اختیاری)
+        'sms_template_customer_lookup' => env('KAVENEGAR_SMS_TEMPLATE_CUSTOMER_LOOKUP', 'register-cargo'), // نام template در Kavenegar برای SMS به مشتری
+        'sms_template_customer' => env('KAVENEGAR_SMS_TEMPLATE_CUSTOMER', 'خریدار گرامی {customer_name}. سفارش شماره {order_id} در تاریخ {order_register_date} سامانه ترابری برای ارسال ثبت اولیه شد'),
+        'sms_template_admin' => env('KAVENEGAR_SMS_TEMPLATE_ADMIN', 'مدیر سیستم. سفارش شماره {order_id} در تاریخ {order_register_date} سامانه ترابری برای ارسال ثبت اولیه شد'),
     ],
 
 ];

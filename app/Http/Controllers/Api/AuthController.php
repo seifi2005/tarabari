@@ -33,14 +33,14 @@ class AuthController extends Controller
 
         if (!$user) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => trans('messages.user_not_found'),
             ], 404);
         }
 
         $result = $this->otpService->generateOtp($request->mobile);
 
         return response()->json([
-            'message' => 'OTP sent successfully',
+            'message' => trans('messages.otp_sent_successfully'),
         ]);
     }
 
@@ -60,20 +60,20 @@ class AuthController extends Controller
 
         if (!$user) {
             throw ValidationException::withMessages([
-                'mobile' => ['User not found.'],
+                'mobile' => [trans('messages.user_not_found')],
             ]);
         }
 
         if (!$this->otpService->verifyOtp($request->mobile, $request->otp)) {
             throw ValidationException::withMessages([
-                'otp' => ['Invalid or expired OTP code.'],
+                'otp' => [trans('messages.invalid_otp')],
             ]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => trans('messages.login_successful'),
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer',
@@ -96,14 +96,14 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'username' => ['The provided credentials are incorrect.'],
+                'username' => [trans('messages.credentials_incorrect')],
             ]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => trans('messages.login_successful'),
             'user' => $user,
             'token' => $token,
             'token_type' => 'Bearer',
@@ -118,7 +118,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out successfully',
+            'message' => trans('messages.logout_successful'),
         ]);
     }
 
@@ -138,4 +138,3 @@ class AuthController extends Controller
         ]);
     }
 }
-

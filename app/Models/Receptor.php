@@ -10,6 +10,8 @@ class Receptor extends Model
 {
     use HasFactory;
 
+    protected $connection = 'core_db';
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -18,10 +20,14 @@ class Receptor extends Model
         'allowed_ip',
         'username',
         'password',
+        'orders_base_url',
+        'orders_auth_token',
+        'callback_url',
     ];
 
     protected $hidden = [
         'password',
+        'orders_auth_token',
     ];
 
     // Password is hashed in controller, no need for cast
@@ -30,6 +36,22 @@ class Receptor extends Model
     public function user()
     {
         return $this->hasOne(User::class);
+    }
+
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class);
+    }
+
+    public function workflow()
+    {
+        return $this->hasOne(ReceptorWorkflow::class);
+    }
+
+    public function providers()
+    {
+        return $this->belongsToMany(Provider::class, 'receptor_provider', 'receptor_id', 'provider_id')
+            ->withTimestamps();
     }
 
     // Events
@@ -70,6 +92,14 @@ class Receptor extends Model
                 $receptor->user->delete();
             }
         });
+    }
+
+    /**
+     * بررسی اینکه آیا پذیرنده تنظیمات API سفارشات را دارد
+     */
+    public function hasOrdersApiConfigured(): bool
+    {
+        return !empty($this->orders_base_url) && !empty($this->orders_auth_token);
     }
 }
 
