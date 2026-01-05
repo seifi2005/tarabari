@@ -188,38 +188,43 @@ class DekaService extends BaseProvider implements ProviderInterface
             throw new \Exception('Invalid shipment data: ' . implode(', ', $validation['errors']));
         }
 
-        // تبدیل به فرمت دکا
+        // تبدیل به فرمت دکا (ساختار flat یک parcel)
         $mapper = new DekaMapper();
-        $data = $mapper->mapShipmentToDeka($shipment, $this->provider);
+        $parcelData = $mapper->mapShipmentToDeka($shipment, $this->provider);
 
         // لاگ داده‌ها برای دیباگ
         Log::debug('Deka mapped data', [
             'shipment_id' => $shipment->id,
-            'data_keys' => array_keys($data),
+            'data_keys' => array_keys($parcelData),
             'sample_data' => [
-                'serviceID' => $data['serviceID'] ?? null,
-                'serviceType' => $data['serviceType'] ?? null,
-                'contractID' => $data['contractID'] ?? null,
-                'destCityID' => $data['destCityID'] ?? null,
-                'sourceCityID' => $data['sourceCityID'] ?? null,
-                'serialNo' => $data['serialNo'] ?? null,
-                'weight' => $data['weight'] ?? null,
-                'length' => $data['length'] ?? null,
-                'width' => $data['width'] ?? null,
-                'height' => $data['height'] ?? null,
+                'serviceID' => $parcelData['serviceID'] ?? null,
+                'serviceType' => $parcelData['serviceType'] ?? null,
+                'contractID' => $parcelData['contractID'] ?? null,
+                'destCityID' => $parcelData['destCityID'] ?? null,
+                'sourceCityID' => $parcelData['sourceCityID'] ?? null,
+                'serialNo' => $parcelData['serialNo'] ?? null,
+                'weight' => $parcelData['weight'] ?? null,
+                'length' => $parcelData['length'] ?? null,
+                'width' => $parcelData['width'] ?? null,
+                'height' => $parcelData['height'] ?? null,
             ],
         ]);
 
-        // اعتبارسنجی داده‌های دکا
-        $dekaValidation = $validator->validateDekaData($data);
+        // اعتبارسنجی داده‌های دکا (روی ساختار flat)
+        $dekaValidation = $validator->validateDekaData($parcelData);
         if (!$dekaValidation['valid']) {
             Log::error('Deka validation failed', [
                 'shipment_id' => $shipment->id,
                 'errors' => $dekaValidation['errors'],
-                'data' => $data,
+                'parcel_data' => $parcelData,
             ]);
             throw new \Exception('Invalid Deka data: ' . implode(', ', $dekaValidation['errors']));
         }
+
+        // ساختار نهایی برای API دکا: داده‌ها باید داخل آرایه Parcels باشند
+        $apiData = [
+            'Parcels' => [$parcelData]
+        ];
 
         try {
             Log::info('Sending shipment to Deka', [
@@ -228,7 +233,7 @@ class DekaService extends BaseProvider implements ProviderInterface
             ]);
 
             $response = $this->getHttpClient()
-                ->post($this->baseUrl . '/clubapi/api/Parcels/SaveParcels', $data);
+                ->post($this->baseUrl . '/clubapi/api/Parcels/SaveParcels', $apiData);
 
             if ($response->failed()) {
                 Log::error('Failed to create shipment in Deka', [
