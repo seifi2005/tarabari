@@ -1,0 +1,32 @@
+diff --git a/app/Models/User.php b/app/Models/User.php
+index cb7452f..5f619c2 100644
+--- a/app/Models/User.php
++++ b/app/Models/User.php
+@@ -4,6 +4,7 @@
+ 
+ // use Illuminate\Contracts\Auth\MustVerifyEmail;
+ use Illuminate\Database\Eloquent\Factories\HasFactory;
++use Illuminate\Database\Eloquent\Relations\HasMany;
+ use Illuminate\Foundation\Auth\User as Authenticatable;
+ use Illuminate\Notifications\Notifiable;
+ use Spatie\Permission\Traits\HasRoles;
+@@ -48,4 +49,19 @@ protected function casts(): array
+             'password' => 'hashed',
+         ];
+     }
++
++    public function newsAuthored(): HasMany
++    {
++        return $this->hasMany(News::class, 'author_id');
++    }
++
++    public function newsEdited(): HasMany
++    {
++        return $this->hasMany(News::class, 'editor_id');
++    }
++
++    public function auditLogs(): HasMany
++    {
++        return $this->hasMany(AuditLog::class);
++    }
+ }
